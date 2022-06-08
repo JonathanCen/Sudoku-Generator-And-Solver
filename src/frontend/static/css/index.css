@@ -34,7 +34,7 @@ body {
     font-size: 1.1em;
 }
 
-.sudokuGridRow, .sudokuGridSubBoxRows {
+.sudokuGridRow, .sudokuGridSubBoxRow {
     height: 100%;
     width: 100%;
     gap: 0;
@@ -42,7 +42,7 @@ body {
     flex-direction: row;
 }
 
-.sudokuGridSubBox, .sudokuGridSubBoxCols {
+.sudokuGridSubBox, .sudokuGridSubBoxCol {
     height: 100%;
     width: 100%;
     gap: 0;
@@ -57,7 +57,7 @@ body {
     border-left: 2px solid black;
 }
 
-.sudokuGridSubBoxCols {
+.sudokuGridSubBoxCol {
     border-bottom: 1px solid black;
     border-left: 1px solid black;
 }

@@ -1,8 +1,23 @@
 import React from 'react';
-import SudokuBox from './SudokuBox';
-import Item from './Item';
 
+// // For Material UI
+// import SudokuBox from './SudokuBox';
+// import Item from './Item';
 
+import SudokuGridSubBoxRow from './SudokuGridSubBoxRow.js';
+
+function SudokuGridSubBox(props) {
+    return (
+        <div className={props.className}>
+            <SudokuGridSubBoxRow className="sudokuGridSubBoxRow" />
+            <SudokuGridSubBoxRow className="sudokuGridSubBoxRow" />
+            <SudokuGridSubBoxRow className="sudokuGridSubBoxRow" />
+        </div>
+    )
+}
+
+/*
+// This is Using Material UI
 function SudokuGridSubbox() {
     return (
         <SudokuBox className="sudokuBox">
@@ -18,8 +33,12 @@ function SudokuGridSubbox() {
         </SudokuBox>
     )
 }
+*/
 
-export default SudokuGridSubbox;
+export default SudokuGridSubBox;
+
+
+
 /*
 function SudokuGrid() {
     return (
