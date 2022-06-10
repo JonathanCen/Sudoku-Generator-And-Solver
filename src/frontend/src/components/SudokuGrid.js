@@ -1,14 +1,100 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import { SudokuContext } from "./SudokuContext";
 import SudokuGridRow from './SudokuGridRow';
+import SudokuGridRow2 from './SudokuGridRow2';
+import SudokuGridCol2 from './SudokuGridCol2';
 
-function SudokuGrid() {
+// function SudokuGrid(props) {
+//     return (
+//         <div id="sudokuGrid">
+//             <SudokuGridRow id="sudokuGridRow1" className="sudokuGridRow" />
+//             <SudokuGridRow id="sudokuGridRow2" className="sudokuGridRow" />
+//             <SudokuGridRow id="sudokuGridRow3" className="sudokuGridRow" />
+//         </div>
+//     );
+// }
+
+// function SudokuGrid(props) {
+//     return (
+//         <div id="sudokuGrid">
+//             {/* <SudokuGridRow2 id="sudokuGridRow1" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow2" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow4" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow5" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow3" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow6" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow7" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow8" className="sudokuGridRow" />
+//             <SudokuGridRow2 id="sudokuGridRow9" className="sudokuGridRow" /> */}
+//             {/* {[...Array(81)].map((x, i) => <SudokuGridCol2 className="sudokuGridSubBox" id={`box-${i}`} />)} */}
+//         </div>
+//     );
+// }
+
+/*
+ * Initalize a blank board for the state.
+ * This variable will hold the initial values of very newly generated board
+ * -1 will represent blank
+ * const initalSudokuBoard = Array(9).fill(Array(9).fill(-1))
+ */
+const initalSudokuBoard = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+];
+
+// Initialize rows and cols
+const arrRows = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+const arrCols = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+// Creates a deep copy of the input array
+function createDeepCopy(arr) {
+    return JSON.parse(JSON.stringify(arr));
+}
+
+function SudokuGrid(props) {
+    // State to hold the state of the sudoku grid
+    const [sudokuBoard, setSudokuBoard] = useState(createDeepCopy(initalSudokuBoard));
+    const { updateCurrentBoard } = useContext(SudokuContext);
+
+    // Changes the state of the board, whenever user tries to change a cell on the board
+    function markCell(e, row, col) {
+        const newValue = parseInt(e.target.value), newSudokuBoard = createDeepCopy(sudokuBoard);
+        // If the newValue is within the accepted values, then assign it to the cell
+        // Otherwise it will set it to a blank cell 
+        newSudokuBoard[row][col] = (newValue === -1 || (newValue > 0 && newValue < 10)) ? newValue : -1;
+        updateCurrentBoard(newSudokuBoard);
+        setSudokuBoard(newSudokuBoard);
+    }
+
     return (
-        <div id="sudokuGrid">
-            <SudokuGridRow id="sudokuGridRow1" className="sudokuGridRow" />
-            <SudokuGridRow id="sudokuGridRow2" className="sudokuGridRow" />
-            <SudokuGridRow id="sudokuGridRow3" className="sudokuGridRow" />
-        </div>
-    );
+        <table id="sudoku-grid">
+            <tbody>
+                {
+                    arrRows.map((row, rowIndex) => {
+                        return <tr id={`row-${row}`} key={rowIndex} >
+                            {arrCols.map((col, colIndex) => {
+                                return (
+                                    <td className="cell-data" key={rowIndex + colIndex}>
+                                        <input maxlength="1" className="cell-input"
+                                            disabled={initalSudokuBoard[row][col] !== -1}
+                                            value={sudokuBoard[row][col] !== -1 ? sudokuBoard[row][col] : ''}
+                                            onChange={(e) => markCell(e, row, col)} />
+                                    </td>
+                                )
+                            })}
+                        </tr>
+                    })
+                }
+            </tbody>
+        </table>
+    )
 }
 
 export default SudokuGrid;
