@@ -1,35 +1,5 @@
 import React, { useState, useContext } from "react";
 import { SudokuContext } from "./SudokuContext";
-import SudokuGridRow from './SudokuGridRow';
-import SudokuGridRow2 from './SudokuGridRow2';
-import SudokuGridCol2 from './SudokuGridCol2';
-
-// function SudokuGrid(props) {
-//     return (
-//         <div id="sudokuGrid">
-//             <SudokuGridRow id="sudokuGridRow1" className="sudokuGridRow" />
-//             <SudokuGridRow id="sudokuGridRow2" className="sudokuGridRow" />
-//             <SudokuGridRow id="sudokuGridRow3" className="sudokuGridRow" />
-//         </div>
-//     );
-// }
-
-// function SudokuGrid(props) {
-//     return (
-//         <div id="sudokuGrid">
-//             {/* <SudokuGridRow2 id="sudokuGridRow1" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow2" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow4" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow5" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow3" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow6" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow7" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow8" className="sudokuGridRow" />
-//             <SudokuGridRow2 id="sudokuGridRow9" className="sudokuGridRow" /> */}
-//             {/* {[...Array(81)].map((x, i) => <SudokuGridCol2 className="sudokuGridSubBox" id={`box-${i}`} />)} */}
-//         </div>
-//     );
-// }
 
 /*
  * Initalize a blank board for the state.

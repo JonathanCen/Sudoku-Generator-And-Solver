@@ -1,10 +1,9 @@
 import React from "react";
+import Grid from '@mui/material/Grid';
 import AppTitle from "./AppTitle";
 import SudokuGrid from "./SudokuGrid";
-import ContactInfo from "./ContactInfo";
-// import Grid from "@material-ui/core/Grid";
-import Grid from '@mui/material/Grid';
 import ButtonContainer from './ButtonContainer';
+import ContactInfo from "./ContactInfo";
 
 function App() {
     return (

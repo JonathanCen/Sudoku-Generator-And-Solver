@@ -1,29 +1,12 @@
-import React, { useState, useContext } from 'react';
-// import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import LoadingButton from '@mui/lab/LoadingButton';
+import React, { useState, useContext } from "react";
+import { Stack, Button } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BuildIcon from '@mui/icons-material/Build';
 import EditIcon from '@mui/icons-material/Edit';
-import { grey } from '@mui/material/colors';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SudokuContext } from './SudokuContext';
-
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: grey[400]
-        },
-        secondary: {
-            main: grey[300]
-        }, Stack
-    }
-})
-
 
 function ButtonContainer(props) {
     const [solvingPuzzle, setSolvingPuzzle] = useState(false);
