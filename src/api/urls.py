@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import main
+from .views import SolveSudoku, GenerateSudoku
 
 urlpatterns = [
-    path('', main)
+    path('solve-sudoku', SolveSudoku.as_view()),
+    path('generate-sudoku', GenerateSudoku.as_view())
 ]

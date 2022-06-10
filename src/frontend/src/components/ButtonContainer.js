@@ -13,11 +13,27 @@ function ButtonContainer(props) {
     const { initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
     function solvePuzzle(e) {
-        setSolvingPuzzle(true);
-        setTimeout(() => {
-            console.log(currentBoard);
-            setSolvingPuzzle(false);
-        }, 300);
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                unsolved_sudoku_board: JSON.stringify(currentBoard)
+            })
+        };
+        fetch("/api/solve-sudoku", requestOptions)
+            .then((response) => response.json())
+            .then((data) => { console.log(data) });
+
+    }
+
+    function generatePuzzle(e) {
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        }
+        fetch("/api/generate-sudoku", requestOptions)
+            .then((response) => response.json())
+            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); })
     }
 
     return (
@@ -36,6 +52,7 @@ function ButtonContainer(props) {
                 variant="outlined"
                 color="primary"
                 startIcon={<BuildIcon />}
+                onClick={(e) => generatePuzzle(e)}
                 disabled={solvingPuzzle}
             >
                 Generate Board

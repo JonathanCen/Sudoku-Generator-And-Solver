@@ -1,5 +1,5 @@
 :root {
-    --sudoku_color: rgb(60, 74, 94);
+    --sudoku_color: rgb(16 31 54);
 }
 
 html, 
@@ -36,7 +36,12 @@ body {
     justify-content: space-between;
 }
 
-#github-link, #personal-page-link, #app-title {
+#app-title {
+    color: var(--sudoku_color);
+    text-decoration: none;
+}
+
+#github-link, #personal-page-link {
     color: inherit;
     text-decoration: none;
 }
@@ -54,6 +59,7 @@ body {
     text-align: center;
     padding: 0px;
     border: 1px solid black;
+    color: black;
 }
 
 .cell-data {

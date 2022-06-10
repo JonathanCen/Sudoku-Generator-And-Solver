@@ -30,17 +30,15 @@ function createDeepCopy(arr) {
 
 function SudokuGrid(props) {
     // State to hold the state of the sudoku grid
-    const [sudokuBoard, setSudokuBoard] = useState(createDeepCopy(initalSudokuBoard));
-    const { updateCurrentBoard } = useContext(SudokuContext);
+    const { initialBoard, currentBoard, updateCurrentBoard } = useContext(SudokuContext);
 
     // Changes the state of the board, whenever user tries to change a cell on the board
     function markCell(e, row, col) {
-        const newValue = parseInt(e.target.value), newSudokuBoard = createDeepCopy(sudokuBoard);
+        const newValue = parseInt(e.target.value), newSudokuBoard = createDeepCopy(currentBoard);
         // If the newValue is within the accepted values, then assign it to the cell
         // Otherwise it will set it to a blank cell 
         newSudokuBoard[row][col] = (newValue === -1 || (newValue > 0 && newValue < 10)) ? newValue : -1;
         updateCurrentBoard(newSudokuBoard);
-        setSudokuBoard(newSudokuBoard);
     }
 
     return (
@@ -53,8 +51,8 @@ function SudokuGrid(props) {
                                 return (
                                     <td className="cell-data" key={rowIndex + colIndex}>
                                         <input maxlength="1" className="cell-input"
-                                            disabled={initalSudokuBoard[row][col] !== -1}
-                                            value={sudokuBoard[row][col] !== -1 ? sudokuBoard[row][col] : ''}
+                                            disabled={initialBoard[row][col] !== -1}
+                                            value={currentBoard[row][col] !== -1 ? currentBoard[row][col] : ''}
                                             onChange={(e) => markCell(e, row, col)} />
                                     </td>
                                 )

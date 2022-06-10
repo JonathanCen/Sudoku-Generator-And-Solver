@@ -9,11 +9,19 @@ const SudokuProvider = ({ children }) => {
 
     // Allows components to update the state of the inital board
     const updateInitialBoard = (board) => {
-        setInitialBoard(JSON.parse(JSON.stringify(board)));
+        if (typeof (board) === "string") {
+            board = JSON.parse(board);
+        }
+        setInitialBoard(JSON.parse(JSON.stringify(board)), () => {
+            console.log(currentBoard);
+        });
     }
 
     // Allows components to update the state of the current board
     const updateCurrentBoard = (board) => {
+        if (typeof (board) === "string") {
+            board = JSON.parse(board);
+        }
         setCurrentBoard(JSON.parse(JSON.stringify(board)));
     }
 
