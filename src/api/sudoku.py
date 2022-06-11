@@ -1,5 +1,9 @@
 from json import loads
 
+"""
+Solve Sudoku
+"""
+
 
 def find_all_candidates(board) -> dict:
     """
@@ -106,8 +110,66 @@ def sudoku_solver(board: [[int]]) -> [[int]]:
     return board
 
 
+"""
+Generate Board button
+"""
+
+
 def sudoku_generator():
     pass
+
+
+"""
+Edit Board button
+"""
+
+
+def filter_entries(entries):
+    return list(filter(lambda num: num != -1, entries))
+
+
+def is_valid_sudoku(board):
+    m, n = len(board), len(board[0])
+    # Check each row ensuring no repeats
+    for row_entries in board:
+        filtered_row = filter_entries(row_entries)
+        if len(filtered_row) != len(set(filtered_row)):
+            return False
+
+    # Check each col ensuring no repeats
+    for col in range(n):
+        filtered_col = filter_entries([board[row][col] for row in range(m)])
+        if len(filtered_col) != len(set(filtered_col)):
+            return False
+
+    # Check each subbox ensuring no repeats
+    for subbox_index in range(m):
+        start_row, end_row = (subbox_index//3)*3, ((subbox_index//3)+1)*3
+        start_col, end_col = (subbox_index % 3)*3, ((subbox_index % 3)+1)*3
+        subbox_entries = [board[row][col] for row in range(
+            start_row, end_row) for col in range(start_col, end_col)]
+        filtered_subbox_entries = filter_entries(subbox_entries)
+        if len(filtered_subbox_entries) != len(set(filtered_subbox_entries)):
+            return False
+
+    return True
+
+
+def is_sudoku_solvable(board_str):
+    board = loads(board_str)
+    m, n = len(board), len(board[0])
+
+    # Check if the board is a valid board
+    if not (is_valid_sudoku(board)):
+        return False, None
+
+    # Check if the board has at least one solution, then it is solvable
+    return True, sudoku_solver(board)
+
+
+"""
+Validate Sudoku button
+"""
 
 
 def check_if_violates_sudoku_rule(board_subset, m):

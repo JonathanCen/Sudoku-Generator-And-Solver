@@ -11,7 +11,7 @@ import { SudokuContext } from './SudokuContext';
 
 function ButtonContainer(props) {
     const [solvingSudoku, setSolvingSudoku] = useState(false);
-    const { edittingSudoku, updateEdittingSudoku, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
+    const { edittingSudoku, updateEdittingSudoku, updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
     function generateSudoku(e) {
         const requestOptions = {
@@ -44,9 +44,18 @@ function ButtonContainer(props) {
     function editSudoku(e) {
         if (edittingSudoku) {
             // Check if the board is solvable, if not update the sign and return 
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    unsolved_sudoku_board: JSON.stringify(initialBoard)
+                })
+            };
 
-            //
-            updateEdittingSudoku();
+            fetch("/api/check-if-valid-sudoku", requestOptions)
+                .then((response) => response.json())
+                .then((data) => { data.Solvable === "true" ? updateEdittingSudoku() : updateBoardStatus(7) });
+
             return
         }
         updateEdittingSudoku();
@@ -67,7 +76,13 @@ function ButtonContainer(props) {
      *  Unmarks all cells and leaves only the inital board
      */
     function clearSudoku(e) {
-        updateCurrentBoard(initialBoard);
+        if (edittingSudoku) {
+            const blankBoard = Array(9).fill(Array(9).fill(-1));
+            updateInitialBoard(blankBoard)
+            updateCurrentBoard(blankBoard);
+        } else {
+            updateCurrentBoard(initialBoard);
+        }
     }
 
     return (
@@ -125,7 +140,7 @@ function ButtonContainer(props) {
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={(e) => clearSudoku(e)}
-                disabled={solvingSudoku || edittingSudoku}
+                disabled={solvingSudoku}
             >
                 Clear Board
             </Button>

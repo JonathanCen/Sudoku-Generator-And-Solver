@@ -37,3 +37,10 @@ class ValidateSudokuResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sudoku
         fields = ("solved_sudoku_board", )
+
+
+# Serializes incoming post request for validating board
+class CheckIfValidSudokuRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sudoku
+        fields = ("unsolved_sudoku_board", )
