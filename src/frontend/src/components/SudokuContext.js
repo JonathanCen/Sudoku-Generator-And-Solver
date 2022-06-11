@@ -21,6 +21,7 @@ const SudokuProvider = ({ children }) => {
     const updateCurrentBoard = (board) => {
         if (typeof (board) === "string") {
             board = JSON.parse(board);
+            console.log(board)
         }
         setCurrentBoard(JSON.parse(JSON.stringify(board)));
     }

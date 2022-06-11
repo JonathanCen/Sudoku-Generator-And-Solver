@@ -22,7 +22,7 @@ function ButtonContainer(props) {
         };
         fetch("/api/solve-sudoku", requestOptions)
             .then((response) => response.json())
-            .then((data) => { console.log(data) });
+            .then((data) => { updateCurrentBoard(data.solved_sudoku_board) });
 
     }
 

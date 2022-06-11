@@ -5,6 +5,8 @@ from .models import Sudoku
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .sudoku import sudoku_solver
+
 # Create your views here.
 
 
@@ -12,10 +14,7 @@ class SolveSudoku(APIView):
     request_serializer_class, response_serializer_class = SolveSudokuRequestSerializer, SolveSudokuResponseSerializer
 
     def solve_sudoku(self, board):
-        """
-        Returns a solved sudoku board
-        """
-        return board
+        return sudoku_solver(board)
 
     # Allows the user to retrieve the solved sudoku
     def post(self, request, format=None):
@@ -37,6 +36,7 @@ class SolveSudoku(APIView):
                 # Get the sudoku query and the possible solved board
                 sudoku_query = query_set[0]
                 solved_sudoku_board = sudoku_query.solved_sudoku_board
+                print(solved_sudoku_board)
 
                 # If the stored unsolved board is not the same as the incoming unsolved board,
                 # then solve the current board and store the solved and unsolved board back into the database
