@@ -1,3 +1,4 @@
+from json import loads
 
 
 def find_all_candidates(board) -> dict:
@@ -109,5 +110,38 @@ def sudoku_generator():
     pass
 
 
-def sudoku_validator():
-    pass
+def check_if_violates_sudoku_rule(board_subset, m):
+    return -1 in board_subset or len(board_subset) < m
+
+
+def sudoku_validator(board_str: str) -> bool:
+    """
+    Validates whether the input board is a correctly solved sudoku
+    """
+    board = loads(board_str)
+    m, n = len(board), len(board[0])
+
+    # Validate the rows
+    for row in board:
+        row_set = set(row)
+        if check_if_violates_sudoku_rule(row_set, m):
+            return False
+
+    # Validate the columns
+    for col in range(n):
+        col_set = set([board[row][col] for row in range(m)])
+        if check_if_violates_sudoku_rule(col_set, m):
+            return False
+
+    # Validate the subboxes
+    for subbox_index in range(m):
+        start_row, end_row = (subbox_index // 3) * \
+            3, ((subbox_index // 3) + 1) * 3
+        start_col, end_col = (subbox_index % 3) * \
+            3, ((subbox_index % 3) + 1) * 3
+        subbox_set = set([board[r][c] for r in range(
+            start_row, end_row) for c in range(start_col, end_col)])
+        if check_if_violates_sudoku_rule(set(subbox_set), m):
+            return False
+
+    return True

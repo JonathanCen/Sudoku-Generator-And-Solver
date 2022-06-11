@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import SudokuSeralizer, SolveSudokuRequestSerializer, SolveSudokuResponseSerializer, GenerateSudokuResponseSerializer
+from .serializers import SudokuSeralizer, SolveSudokuRequestSerializer, SolveSudokuResponseSerializer, GenerateSudokuResponseSerializer, ValidateSudokuResponseSerializer
 from .models import Sudoku
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .sudoku import sudoku_solver
+from .sudoku import sudoku_solver, sudoku_validator
 
 # Create your views here.
 
@@ -32,7 +32,7 @@ class SolveSudoku(APIView):
 
             # If the user exists in the database, then retrieve the solved board board or update the database
             if query_set.exists():
-                print("User Exists!")
+                # print("User Exists!")
                 # Get the sudoku query and the possible solved board
                 sudoku_query = query_set[0]
                 solved_sudoku_board = sudoku_query.solved_sudoku_board
@@ -41,9 +41,9 @@ class SolveSudoku(APIView):
                 # If the stored unsolved board is not the same as the incoming unsolved board,
                 # then solve the current board and store the solved and unsolved board back into the database
                 if sudoku_query.unsolved_sudoku_board != unsolved_sudoku_board:
-                    print("User Exists & board editted!")
-                    print("new board: ", unsolved_sudoku_board)
-                    print("old board: ", sudoku_query.unsolved_sudoku_board)
+                    # print("User Exists & board editted!")
+                    # print("new board: ", unsolved_sudoku_board)
+                    # print("old board: ", sudoku_query.unsolved_sudoku_board)
                     solved_sudoku_board = self.solve_sudoku(
                         unsolved_sudoku_board)
                     sudoku_query.unsolved_sudoku_board = unsolved_sudoku_board
@@ -57,7 +57,7 @@ class SolveSudoku(APIView):
 
             # Else the user doesn't exist in the database, then create an entry in the database for the user
             else:
-                print("User does not Exists!")
+                # print("User does not Exists!")
                 solved_sudoku_board = self.solve_sudoku(unsolved_sudoku_board)
                 sudoku_model = Sudoku(
                     user_session=user_session_key,
@@ -132,3 +132,14 @@ class GenerateSudoku(APIView):
             sudoku_model.save()
             return Response(GenerateSudokuResponseSerializer(response).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Cannot generate data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ValidateSudoku(APIView):
+    lookup_url = 'board'
+
+    def get(self, request, format=None):
+        board = request.GET.get(self.lookup_url)
+        response = {"solved_sudoku_board": board}
+        data = ValidateSudokuResponseSerializer(response).data
+        data['is_correct'] = sudoku_validator(board)
+        return Response(data, status=status.HTTP_200_OK)

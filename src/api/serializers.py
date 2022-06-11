@@ -33,11 +33,7 @@ class GenerateSudokuResponseSerializer(serializers.ModelSerializer):
 # Serializes incoming get request for validating board
 
 
-class ValidateSudokuRequestSerializer():
+class ValidateSudokuResponseSerializer(serializers.ModelSerializer):
     class Meta:
-        pass
-
-
-class ValidateSudokuResponsetSerializer():
-    class Meta:
-        pass
+        model = Sudoku
+        fields = ("solved_sudoku_board", )

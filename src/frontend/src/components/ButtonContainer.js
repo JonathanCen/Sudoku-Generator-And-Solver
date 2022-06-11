@@ -6,27 +6,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BuildIcon from '@mui/icons-material/Build';
 import EditIcon from '@mui/icons-material/Edit';
+import EditOffIcon from '@mui/icons-material/EditOff';
 import { SudokuContext } from './SudokuContext';
 
 function ButtonContainer(props) {
-    const [solvingPuzzle, setSolvingPuzzle] = useState(false);
-    const { initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
+    const [solvingSudoku, setSolvingSudoku] = useState(false);
+    const { edittingSudoku, updateEdittingSudoku, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
-    function solvePuzzle(e) {
-        const requestOptions = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                unsolved_sudoku_board: JSON.stringify(currentBoard)
-            })
-        };
-        fetch("/api/solve-sudoku", requestOptions)
-            .then((response) => response.json())
-            .then((data) => { updateCurrentBoard(data.solved_sudoku_board) });
-
-    }
-
-    function generatePuzzle(e) {
+    function generateSudoku(e) {
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -34,6 +21,53 @@ function ButtonContainer(props) {
         fetch("/api/generate-sudoku", requestOptions)
             .then((response) => response.json())
             .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); })
+    }
+
+    function solveSudoku(e) {
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                unsolved_sudoku_board: JSON.stringify(currentBoard)
+            })
+        };
+        setSolvingSudoku(true);
+        fetch("/api/solve-sudoku", requestOptions)
+            .then((response) => response.json())
+            .then((data) => { updateCurrentBoard(data.solved_sudoku_board); setSolvingSudoku(false) });
+
+    }
+
+    /*
+     * Allows users to edit the board and checks there is at least one solution to the user generated sudoku
+     */
+    function editSudoku(e) {
+        if (edittingSudoku) {
+            // Check if the board is solvable, if not update the sign and return 
+
+            //
+            updateEdittingSudoku();
+            return
+        }
+        updateEdittingSudoku();
+        clearSudoku(e);
+    }
+
+    /*
+     * Validates whether the board is correct
+     * ! Maybe rename "validate" to something else
+     */
+    function validateSudoku(e) {
+        fetch(`/api/validate-sudoku?board=${JSON.stringify(currentBoard)}`)
+            .then((response) => response.json())
+            .then((data) => { alert(`The sudoku is ${data.is_correct ? 'correct!' : ' incorrect.'}`) });
+    }
+
+    /* 
+     *  Unmarks all cells and leaves only the inital board
+     */
+    function clearSudoku(e) {
+        updateCurrentBoard(initialBoard);
     }
 
     return (
@@ -52,8 +86,8 @@ function ButtonContainer(props) {
                 variant="outlined"
                 color="primary"
                 startIcon={<BuildIcon />}
-                onClick={(e) => generatePuzzle(e)}
-                disabled={solvingPuzzle}
+                onClick={(e) => generateSudoku(e)}
+                disabled={solvingSudoku || edittingSudoku}
             >
                 Generate Board
             </Button>
@@ -61,33 +95,37 @@ function ButtonContainer(props) {
                 variant="outlined"
                 color="secondary"
                 startIcon={<BorderColorIcon />}
-                onClick={(e) => solvePuzzle(e)}
-                loading={solvingPuzzle}
+                onClick={(e) => solveSudoku(e)}
+                disabled={edittingSudoku}
+                loading={solvingSudoku}
                 loadingIndicator="Solving..."
             >
-                Solve Puzzle
+                Solve Sudoku
             </LoadingButton>
             <Button
                 variant="outlined"
                 color="warning"
-                startIcon={<EditIcon />}
-                disabled={solvingPuzzle}
+                startIcon={edittingSudoku ? <EditOffIcon /> : <EditIcon />}
+                onClick={editSudoku}
+                disabled={solvingSudoku}
             >
-                Edit Board
+                {edittingSudoku ? "Stop Editting" : "Edit Board"}
             </Button>
             <Button
                 variant="outlined"
                 color="success"
                 startIcon={<SearchIcon />}
-                disabled={solvingPuzzle}
+                onClick={(e) => validateSudoku(e)}
+                disabled={solvingSudoku || edittingSudoku}
             >
-                Validate Board
+                Validate Sudoku
             </Button>
             <Button
                 variant="outlined"
                 color="error"
                 startIcon={<DeleteIcon />}
-                disabled={solvingPuzzle}
+                onClick={(e) => clearSudoku(e)}
+                disabled={solvingSudoku || edittingSudoku}
             >
                 Clear Board
             </Button>
