@@ -5,7 +5,7 @@ from .models import Sudoku
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .sudoku import sudoku_solver, sudoku_validator, is_sudoku_solvable
+from .sudoku import sudoku_solver, sudoku_validator, is_sudoku_solvable, sudoku_generator
 
 # Create your views here.
 
@@ -23,7 +23,7 @@ class SolveSudoku(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
         serializer = self.request_serializer_class(data=request.data)
-        print("REQUEST_DATA: ", request.data)
+        # print("REQUEST_DATA: ", request.data)
         if serializer.is_valid():
             unsolved_sudoku_board = serializer.data.get(
                 'unsolved_sudoku_board')
@@ -36,7 +36,7 @@ class SolveSudoku(APIView):
                 # Get the sudoku query and the possible solved board
                 sudoku_query = query_set[0]
                 solved_sudoku_board = sudoku_query.solved_sudoku_board
-                print(solved_sudoku_board)
+                # print(solved_sudoku_board)
 
                 # If the stored unsolved board is not the same as the incoming unsolved board,
                 # then solve the current board and store the solved and unsolved board back into the database
@@ -81,28 +81,7 @@ class GenerateSudoku(APIView):
         """
         Generates a new sudoku and returns a new board and solution to it
         """
-        new_board = [
-            [5, 3, -1, -1, 7, -1, -1, -1, -1],
-            [6, -1, -1, 1, 9, 5, -1, -1, -1],
-            [-1, 9, 8, -1, -1, -1, -1, 6, -1],
-            [8, -1, -1, -1, 6, -1, -1, -1, 3],
-            [4, -1, -1, 8, -1, 3, -1, -1, 1],
-            [7, -1, -1, -1, 2, -1, -1, -1, 6],
-            [-1, 6, -1, -1, -1, -1, 2, 8, -1],
-            [-1, -1, -1, 4, 1, 9, -1, -1, 5],
-            [-1, -1, -1, -1, 8, -1, -1, 7, 9]
-        ]
-        solved_board = [
-            [5, 3, 4, 6, 7, 8, 9, 1, 2],
-            [6, 7, 2, 1, 9, 5, 3, 4, 8],
-            [1, 9, 8, 3, 4, 2, 5, 6, 7],
-            [8, 5, 9, 7, 6, 1, 4, 2, 3],
-            [4, 2, 6, 8, 5, 3, 7, 9, 1],
-            [7, 1, 3, 9, 2, 4, 8, 5, 6],
-            [9, 6, 1, 5, 3, 7, 2, 8, 4],
-            [2, 8, 7, 4, 1, 9, 6, 3, 5],
-            [3, 4, 5, 2, 8, 6, 1, 7, 9]
-        ]
+        new_board, solved_board = sudoku_generator()
         return self.convert_sudoku_grid_to_string(new_board), self.convert_sudoku_grid_to_string(solved_board)
 
     # this will return back a new sudoku

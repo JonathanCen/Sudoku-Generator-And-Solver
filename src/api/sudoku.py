@@ -1,11 +1,13 @@
 from json import loads
+from random import shuffle, randint, seed
+from copy import deepcopy
 
 """
 Solve Sudoku
 """
 
 
-def find_all_candidates(board) -> dict:
+def find_all_candidates(board) -> []:
     """
     Find all the candidates of each row, column, and box
     """
@@ -57,7 +59,7 @@ def addCandidate(all_candidates, row, col, candidate) -> None:
     all_candidates[2][(sub_box_row, sub_box_col)].add(candidate)
 
 
-def solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index) -> bool:
+def solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index, shuffle_candidates=False) -> bool:
     """
     Recursive function that does all the backtracking
     """
@@ -70,8 +72,11 @@ def solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index) -> b
     sub_box_row, sub_box_col = subBoxIndices(row, col)
 
     # Generate all the candidates for this cell
-    candidates = all_candidates[0][row] & all_candidates[1][col] & all_candidates[2][(
-        sub_box_row, sub_box_col)]
+    candidates = list(all_candidates[0][row] & all_candidates[1][col] & all_candidates[2][(
+        sub_box_row, sub_box_col)])
+
+    if shuffle_candidates:
+        shuffle(candidates)
 
     # Iterate through all possibilities for this cell
     for candidate in candidates:
@@ -82,7 +87,7 @@ def solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index) -> b
         removeCandidate(all_candidates, row, col, candidate)
 
         # Recurisvely call the next empty cell index and fill up the board with all possibilities
-        if solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index + 1):
+        if solveSudokuHelper(board, all_candidates, empty_cells, empty_cell_index + 1, shuffle_candidates):
             return True
 
         # If the next empty cell return False, then there is a contradiction somewhere ahead, so this
@@ -113,10 +118,110 @@ def sudoku_solver(board: [[int]]) -> [[int]]:
 """
 Generate Board button
 """
+num_solutions = 0
+
+
+def check_pure_sudoku(board, all_candidates, empty_cells, empty_cell_index):
+    if empty_cell_index == len(empty_cells):
+        global num_solutions
+        num_solutions += 1
+        return
+
+    row, col = empty_cells[empty_cell_index]
+    sub_box_row, sub_box_col = subBoxIndices(row, col)
+
+    candidates = list(all_candidates[0][row] & all_candidates[1][col] & all_candidates[2][(
+        sub_box_row, sub_box_col)])
+
+    for candidate in candidates:
+        # Mark the current cell
+        board[row][col] = candidate
+
+        # Remove candidate from all_candidates
+        removeCandidate(all_candidates, row, col, candidate)
+
+        # Backtracking
+        check_pure_sudoku(board, all_candidates,
+                          empty_cells, empty_cell_index + 1)
+
+        # Add the candidate back
+        addCandidate(all_candidates, row, col, candidate)
+
+    board[row][col] = -1
+
+
+def randomly_remove_cells(board, num_attempts):
+    """ Randomly remove cells from the board until we run out of attempts. Modifies the board inplace.
+    board        - is the sudoku board
+    num_attempts - is the number of tries we will try to remove a random number from the sudoku w/o collision
+    """
+    global num_solutions
+
+    # init
+    m, n = 9, 9
+
+    # Creates random coordinates
+    marked_cells = [(row, col) for row in range(m) for col in range(n)]
+    shuffle(marked_cells)
+
+    # Generate candidates
+    row_candidates = {row: set() for row in range(m)}
+    col_candidates = {col: set() for col in range(n)}
+    sub_box_candidates = {(row, col): set()
+                          for row in range(m) for col in range(n)}
+    all_candidates = [row_candidates, col_candidates, sub_box_candidates]
+
+    # Empty cells
+    empty_cells = []
+
+    # Keep on removing random cells until we run out of tries
+    while num_attempts > -1:
+
+        # Get a random_row and random_col
+        random_row, random_col = marked_cells.pop()
+
+        # Save the value and remove it from the board
+        cell_value = board[random_row][random_col]
+        board[random_row][random_col] = -1
+        empty_cells.append((random_row, random_col))
+
+        # Add the cell's value to the candidates
+        row_candidates[random_row].add(cell_value)
+        col_candidates[random_col].add(cell_value)
+        sub_box_row, sub_box_col = subBoxIndices(random_row, random_col)
+        sub_box_candidates[(sub_box_row, sub_box_col)].add(cell_value)
+
+        # Create a deep copy of the board
+        deep_copy_board = deepcopy(board)
+
+        # Check if the sudoku is still a pure sudoku
+        check_pure_sudoku(deep_copy_board, all_candidates, empty_cells, 0)
+
+        # If there are more than 1 solution, then it's not a pure sudoku, so we will need to place back this value and try again
+        if num_solutions > 1:
+            board[random_row][random_col] = cell_value
+            num_attempts -= 1
+
+        # reset the global counter
+        num_solutions = 0
 
 
 def sudoku_generator():
-    pass
+    m, n = 9, 9
+    inital_board = [[-1]*n for _ in range(m)]
+
+    # Solve a blank sudoku
+    all_candidates = find_all_candidates(inital_board)
+    empty_cells = [(row, col) for row in range(m) for col in range(n)]
+    solveSudokuHelper(inital_board, all_candidates, empty_cells, 0, True)
+    solved_board, unsolved_board = deepcopy(
+        inital_board), deepcopy(inital_board)
+
+    # Randomly remove an element in the grid that is not removed, and check if there is still a pure solution
+    # This is the number of tries we will try to remove a random number from the sudoku w/o collision
+    randomly_remove_cells(unsolved_board, 5)
+
+    return unsolved_board, solved_board
 
 
 """

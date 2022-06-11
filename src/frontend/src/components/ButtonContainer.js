@@ -11,17 +11,18 @@ import { SudokuContext } from './SudokuContext';
 
 function ButtonContainer(props) {
     const [solvingSudoku, setSolvingSudoku] = useState(false);
-    const { edittingSudoku, updateEdittingSudoku, updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
+    const { generatingSudoku, updateGeneratingSudoku, edittingSudoku, updateEdittingSudoku,
+        updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
     function generateSudoku(e) {
-        updateBoardStatus(1);
+        updateBoardStatus(1); updateGeneratingSudoku();
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
         };
         fetch("/api/generate-sudoku", requestOptions)
             .then((response) => response.json())
-            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); updateBoardStatus(2); })
+            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); updateBoardStatus(2); updateGeneratingSudoku(); })
     }
 
     function solveSudoku(e) {
@@ -119,7 +120,7 @@ function ButtonContainer(props) {
                 color="primary"
                 startIcon={<BuildIcon />}
                 onClick={(e) => generateSudoku(e)}
-                disabled={solvingSudoku || edittingSudoku}
+                disabled={solvingSudoku ^ edittingSudoku}
             >
                 Generate Board
             </Button>
@@ -128,7 +129,7 @@ function ButtonContainer(props) {
                 color="secondary"
                 startIcon={<BorderColorIcon />}
                 onClick={(e) => solveSudoku(e)}
-                disabled={edittingSudoku}
+                disabled={edittingSudoku ^ generatingSudoku}
                 loading={solvingSudoku}
                 loadingIndicator="Solving..."
             >
@@ -139,7 +140,7 @@ function ButtonContainer(props) {
                 color="warning"
                 startIcon={edittingSudoku ? <EditOffIcon /> : <EditIcon />}
                 onClick={editSudoku}
-                disabled={solvingSudoku}
+                disabled={solvingSudoku ^ generatingSudoku}
             >
                 {edittingSudoku ? "Stop Editting" : "Edit Board"}
             </Button>
@@ -148,7 +149,7 @@ function ButtonContainer(props) {
                 color="success"
                 startIcon={<SearchIcon />}
                 onClick={(e) => validateSudoku(e)}
-                disabled={solvingSudoku || edittingSudoku}
+                disabled={solvingSudoku ^ edittingSudoku ^ generatingSudoku}
             >
                 Validate Sudoku
             </Button>
@@ -157,7 +158,7 @@ function ButtonContainer(props) {
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={(e) => clearSudoku(e)}
-                disabled={solvingSudoku}
+                disabled={solvingSudoku ^ generatingSudoku}
             >
                 Clear Board
             </Button>

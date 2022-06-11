@@ -33,6 +33,7 @@ const SudokuContext = createContext();
 const SudokuProvider = ({ children }) => {
     // Store the inital board, and the updated board user makes in a seperate state
     const [edittingSudoku, setEdittingSudoku] = useState(false);
+    const [generatingSudoku, setGeneratingSudoku] = useState(false);
     const [boardStatus, setboardStatus] = useState(status[0]);
     const [initialBoard, setInitialBoard] = useState(Array(9).fill(Array(9).fill(-1)));
     const [currentBoard, setCurrentBoard] = useState(Array(9).fill(Array(9).fill(-1)));
@@ -63,8 +64,17 @@ const SudokuProvider = ({ children }) => {
         setEdittingSudoku(!edittingSudoku)
     }
 
+    const updateGeneratingSudoku = () => {
+        setGeneratingSudoku(!generatingSudoku)
+    }
+
     return (
-        <SudokuContext.Provider value={{ edittingSudoku, updateEdittingSudoku, boardStatus, updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard }}>
+        <SudokuContext.Provider
+            value={{
+                generatingSudoku, updateGeneratingSudoku, edittingSudoku, updateEdittingSudoku,
+                boardStatus, updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard,
+                updateInitialBoard
+            }}>
             {children}
         </SudokuContext.Provider>
     )
