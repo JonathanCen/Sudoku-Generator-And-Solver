@@ -60,12 +60,12 @@ const SudokuProvider = ({ children }) => {
     }
 
     // Allow components to update the edit board state
-    const updateEdittingSudoku = () => {
-        setEdittingSudoku(!edittingSudoku)
+    const updateEdittingSudoku = (edittingSudokuBool) => {
+        setEdittingSudoku(edittingSudokuBool)
     }
 
-    const updateGeneratingSudoku = () => {
-        setGeneratingSudoku(!generatingSudoku)
+    const updateGeneratingSudoku = (generatingSudokuBool) => {
+        setGeneratingSudoku(generatingSudokuBool)
     }
 
     return (

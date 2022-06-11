@@ -15,26 +15,32 @@ function ButtonContainer(props) {
         updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
     function generateSudoku(e) {
-        updateBoardStatus(1); updateGeneratingSudoku();
+        updateBoardStatus(1);
+        updateGeneratingSudoku(true);
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
         };
         fetch("/api/generate-sudoku", requestOptions)
             .then((response) => response.json())
-            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); updateBoardStatus(2); updateGeneratingSudoku(); })
+            .then((data) => {
+                updateCurrentBoard(data.unsolved_sudoku_board);
+                updateInitialBoard(data.unsolved_sudoku_board);
+                updateGeneratingSudoku(false);
+                updateBoardStatus(2);
+            });
     }
 
     function solveSudoku(e) {
         updateBoardStatus(3);
+        setSolvingSudoku(true);
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                unsolved_sudoku_board: JSON.stringify(currentBoard)
+                unsolved_sudoku_board: JSON.stringify(initialBoard)
             })
         };
-        setSolvingSudoku(true);
         fetch("/api/solve-sudoku", requestOptions)
             .then((response) => response.json())
             .then((data) => { updateCurrentBoard(data.solved_sudoku_board); setSolvingSudoku(false); updateBoardStatus(4); });
@@ -60,7 +66,7 @@ function ButtonContainer(props) {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.Solvable === "true") {
-                        updateEdittingSudoku(); updateBoardStatus(8);
+                        updateEdittingSudoku(false); updateBoardStatus(8);
                     } else {
                         updateBoardStatus(7);
                     }
@@ -68,9 +74,9 @@ function ButtonContainer(props) {
 
             return
         }
+        clearSudoku(e);
         updateBoardStatus(5);
-        clearSudoku(e, true);
-        updateEdittingSudoku();
+        updateEdittingSudoku(true);
     }
 
     /*
@@ -87,10 +93,8 @@ function ButtonContainer(props) {
     /* 
      *  Unmarks all cells and leaves only the inital board
      */
-    function clearSudoku(e, fromEditingSudoku = false) {
-        if (!fromEditingSudoku) {
-            updateBoardStatus(12);
-        }
+    function clearSudoku(e) {
+        updateBoardStatus(12);
         if (edittingSudoku) {
             const blankBoard = Array(9).fill(Array(9).fill(-1));
             updateInitialBoard(blankBoard)
@@ -98,9 +102,7 @@ function ButtonContainer(props) {
         } else {
             updateCurrentBoard(initialBoard);
         }
-        if (!fromEditingSudoku) {
-            updateBoardStatus(13);
-        }
+        updateBoardStatus(13);
     }
 
     return (
@@ -115,21 +117,23 @@ function ButtonContainer(props) {
                 width: "600px",
             }}
         >
-            <Button
+            <LoadingButton
                 variant="outlined"
                 color="primary"
                 startIcon={<BuildIcon />}
                 onClick={(e) => generateSudoku(e)}
-                disabled={solvingSudoku ^ edittingSudoku}
+                disabled={solvingSudoku || edittingSudoku}
+                loading={generatingSudoku}
+                loadingPosition="start"
             >
                 Generate Board
-            </Button>
+            </LoadingButton>
             <LoadingButton
                 variant="outlined"
                 color="secondary"
                 startIcon={<BorderColorIcon />}
                 onClick={(e) => solveSudoku(e)}
-                disabled={edittingSudoku ^ generatingSudoku}
+                disabled={edittingSudoku || generatingSudoku}
                 loading={solvingSudoku}
                 loadingIndicator="Solving..."
             >
@@ -140,7 +144,7 @@ function ButtonContainer(props) {
                 color="warning"
                 startIcon={edittingSudoku ? <EditOffIcon /> : <EditIcon />}
                 onClick={editSudoku}
-                disabled={solvingSudoku ^ generatingSudoku}
+                disabled={solvingSudoku || generatingSudoku}
             >
                 {edittingSudoku ? "Stop Editting" : "Edit Board"}
             </Button>
@@ -149,7 +153,7 @@ function ButtonContainer(props) {
                 color="success"
                 startIcon={<SearchIcon />}
                 onClick={(e) => validateSudoku(e)}
-                disabled={solvingSudoku ^ edittingSudoku ^ generatingSudoku}
+                disabled={solvingSudoku || edittingSudoku || generatingSudoku}
             >
                 Validate Sudoku
             </Button>
@@ -158,7 +162,7 @@ function ButtonContainer(props) {
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={(e) => clearSudoku(e)}
-                disabled={solvingSudoku ^ generatingSudoku}
+                disabled={solvingSudoku || generatingSudoku}
             >
                 Clear Board
             </Button>

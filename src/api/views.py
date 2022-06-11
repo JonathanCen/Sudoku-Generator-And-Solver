@@ -36,7 +36,6 @@ class SolveSudoku(APIView):
                 # Get the sudoku query and the possible solved board
                 sudoku_query = query_set[0]
                 solved_sudoku_board = sudoku_query.solved_sudoku_board
-                # print(solved_sudoku_board)
 
                 # If the stored unsolved board is not the same as the incoming unsolved board,
                 # then solve the current board and store the solved and unsolved board back into the database
