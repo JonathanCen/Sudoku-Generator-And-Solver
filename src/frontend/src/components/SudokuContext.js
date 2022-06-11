@@ -19,7 +19,7 @@ const status = [
     "Board editted!",
 
     // Validate sudoku
-    "Validating sudoku",
+    "Validating sudoku...",
     "Sudoku is incorrect!",
     "Sudoku is correct! Congrats!",
 
@@ -54,8 +54,8 @@ const SudokuProvider = ({ children }) => {
     }
 
     // Allow components to update the state of the board status
-    const updateBoardStatus = (status) => {
-        setboardStatus(status);
+    const updateBoardStatus = (statusCode) => {
+        setboardStatus(status[statusCode]);
     }
 
     // Allow components to update the edit board state

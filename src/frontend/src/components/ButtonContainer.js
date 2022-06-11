@@ -14,16 +14,18 @@ function ButtonContainer(props) {
     const { edittingSudoku, updateEdittingSudoku, updateBoardStatus, initialBoard, currentBoard, updateCurrentBoard, updateInitialBoard } = useContext(SudokuContext);
 
     function generateSudoku(e) {
+        updateBoardStatus(1);
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-        }
+        };
         fetch("/api/generate-sudoku", requestOptions)
             .then((response) => response.json())
-            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); })
+            .then((data) => { updateCurrentBoard(data.unsolved_sudoku_board); updateInitialBoard(data.unsolved_sudoku_board); updateBoardStatus(2); })
     }
 
     function solveSudoku(e) {
+        updateBoardStatus(3);
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -34,7 +36,7 @@ function ButtonContainer(props) {
         setSolvingSudoku(true);
         fetch("/api/solve-sudoku", requestOptions)
             .then((response) => response.json())
-            .then((data) => { updateCurrentBoard(data.solved_sudoku_board); setSolvingSudoku(false) });
+            .then((data) => { updateCurrentBoard(data.solved_sudoku_board); setSolvingSudoku(false); updateBoardStatus(4); });
 
     }
 
@@ -43,6 +45,7 @@ function ButtonContainer(props) {
      */
     function editSudoku(e) {
         if (edittingSudoku) {
+            updateBoardStatus(6);
             // Check if the board is solvable, if not update the sign and return 
             const requestOptions = {
                 method: "POST",
@@ -54,12 +57,19 @@ function ButtonContainer(props) {
 
             fetch("/api/check-if-valid-sudoku", requestOptions)
                 .then((response) => response.json())
-                .then((data) => { data.Solvable === "true" ? updateEdittingSudoku() : updateBoardStatus(7) });
+                .then((data) => {
+                    if (data.Solvable === "true") {
+                        updateEdittingSudoku(); updateBoardStatus(8);
+                    } else {
+                        updateBoardStatus(7);
+                    }
+                });
 
             return
         }
+        updateBoardStatus(5);
+        clearSudoku(e, true);
         updateEdittingSudoku();
-        clearSudoku(e);
     }
 
     /*
@@ -67,21 +77,28 @@ function ButtonContainer(props) {
      * ! Maybe rename "validate" to something else
      */
     function validateSudoku(e) {
+        updateBoardStatus(9);
         fetch(`/api/validate-sudoku?board=${JSON.stringify(currentBoard)}`)
             .then((response) => response.json())
-            .then((data) => { alert(`The sudoku is ${data.is_correct ? 'correct!' : ' incorrect.'}`) });
+            .then((data) => { data.is_correct ? updateBoardStatus(11) : updateBoardStatus(10) });
     }
 
     /* 
      *  Unmarks all cells and leaves only the inital board
      */
-    function clearSudoku(e) {
+    function clearSudoku(e, fromEditingSudoku = false) {
+        if (!fromEditingSudoku) {
+            updateBoardStatus(12);
+        }
         if (edittingSudoku) {
             const blankBoard = Array(9).fill(Array(9).fill(-1));
             updateInitialBoard(blankBoard)
             updateCurrentBoard(blankBoard);
         } else {
             updateCurrentBoard(initialBoard);
+        }
+        if (!fromEditingSudoku) {
+            updateBoardStatus(13);
         }
     }
 
