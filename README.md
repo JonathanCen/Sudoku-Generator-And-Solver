@@ -1,4 +1,4 @@
-# Sudoku Solver 🔢
+# Sudoku Generator & Solver 🔢
 
 Sudoku Solver is a Django/React application that solves and generates pure sudoku puzzles or allows users to design, validate, and solve sudoku puzzles. Test it out: [Live Demo](ADDRESS).
 
