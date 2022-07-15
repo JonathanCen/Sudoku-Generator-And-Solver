@@ -63,5 +63,5 @@ Feel free to check the [issues page](https://github.com/JonathanCen/Sudoku-Solve
 
 ## License
 
-Copyright © 2019 [Jonathan Cen](<ADD PERSONAL WEBSITE LINK>).\
+Copyright © 2020 [Jonathan Cen](<ADD PERSONAL WEBSITE LINK>).\
 This project is [MIT licensed](https://github.com/JonathanCen/Sudoku-Solver/blob/main/LICENSE).
